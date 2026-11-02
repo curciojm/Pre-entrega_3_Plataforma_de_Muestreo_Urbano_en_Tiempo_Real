@@ -59,6 +59,8 @@ La prueba del proyecto se realizó en un entorno local de Kubernetes mediante Mi
 
 No es necesario instalar Python, Kafka ni Spark directamente en el equipo anfitrión. Las dependencias se incorporan a las imágenes Docker correspondientes.
 
+Los comandos de terminal de esta guía están escritos para Bash (Linux, macOS o Git Bash en Windows). Si se utiliza Windows, se recomienda ejecutar los comandos desde Git Bash.
+
 ## Construcción de las imágenes
 
 Desde la raíz del repositorio, iniciar Minikube:
