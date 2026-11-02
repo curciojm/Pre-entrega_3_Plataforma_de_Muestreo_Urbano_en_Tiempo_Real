@@ -1,0 +1,23 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: urban-producer
+  namespace: urban-data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: urban-producer
+  template:
+    metadata:
+      labels:
+        app: urban-producer
+    spec:
+      containers:
+        - name: producer
+          image: urban-producer:1.0
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: urban-data-config

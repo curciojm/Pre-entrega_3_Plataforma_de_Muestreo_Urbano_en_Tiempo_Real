@@ -1,0 +1,5 @@
+# Namespace en Kubernetes es una forma de crear una división lógica dentro de un mismo clúster. Permite organizar y aislar recursos sin necesidad de crear otro clúster
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: urban-data

@@ -1,0 +1,74 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-driver
+  namespace: urban-data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark-driver
+  template:
+    metadata:
+      labels:
+        app: spark-driver
+    spec:
+      serviceAccountName: spark
+      containers:
+        - name: spark-driver
+          image: urban-spark:2.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /opt/spark/bin/spark-submit
+          args:
+            - --master
+            - k8s://https://kubernetes.default.svc:443
+            - --deploy-mode
+            - client
+            - --name
+            - urban-sensor-streaming
+            - --packages
+            - org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.4
+            - --conf
+            - spark.kubernetes.namespace=urban-data
+            - --conf
+            - spark.kubernetes.container.image=urban-spark:2.1
+            - --conf
+            - spark.kubernetes.authenticate.driver.serviceAccountName=spark
+            - --conf
+            - spark.kubernetes.driver.pod.name=$(POD_NAME)
+            - --conf
+            - spark.driver.host=$(POD_IP)
+            - --conf
+            - spark.driver.bindAddress=0.0.0.0
+            - --conf
+            - spark.driver.port=7078
+            - --conf
+            - spark.blockManager.port=7079
+            - --conf
+            - spark.executor.instances=1
+            - --conf
+            - spark.executor.cores=1
+            - --conf
+            - spark.executor.memory=512m
+            - --conf
+            - spark.kubernetes.executor.deleteOnTermination=false
+            - --conf
+            - spark.jars.ivy=/tmp/.ivy2
+            - /app/streaming_processor.py
+          envFrom:
+            - configMapRef:
+                name: urban-data-config
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          ports:
+            - containerPort: 7078
+            - containerPort: 7079
